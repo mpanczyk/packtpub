@@ -43,29 +43,37 @@ class PacktpubSpider(scrapy.Spider):
             path.joinpath('title.txt').write_text(title)
 
             pdf_link = item.css('div.product-buttons-line.toggle > div:nth-child(2) > a:nth-child(1) ::attr(href)').extract_first()
-            yield scrapy.Request(
-                url=self.base_url + pdf_link,
-                callback=self.save_file,
-                meta={'path': path.joinpath(slug + '.pdf')},
-            )
+            p = path.joinpath(slug + '.pdf')
+            if pdf_link and not p.exists():
+                yield scrapy.Request(
+                    url=self.base_url + pdf_link,
+                    callback=self.save_file,
+                    meta={'path': p},
+                )
             epub_link = item.css('div.product-buttons-line.toggle > div:nth-child(2) > a:nth-child(2) ::attr(href)').extract_first()
-            yield scrapy.Request(
-                url=self.base_url + epub_link,
-                callback=self.save_file,
-                meta={'path': path.joinpath(slug + '.epub')},
-            )
+            p = path.joinpath(slug + '.epub')
+            if epub_link and not p.exists():
+                yield scrapy.Request(
+                    url=self.base_url + epub_link,
+                    callback=self.save_file,
+                    meta={'path': p},
+                )
             mobi_link = item.css('div.product-buttons-line.toggle > div:nth-child(2) > a:nth-child(3) ::attr(href)').extract_first()
-            yield scrapy.Request(
-                url=self.base_url + mobi_link,
-                callback=self.save_file,
-                meta={'path': path.joinpath(slug + '.mobi')},
-            )
+            p = path.joinpath(slug + '.mobi')
+            if mobi_link and not p.exists():
+                yield scrapy.Request(
+                    url=self.base_url + mobi_link,
+                    callback=self.save_file,
+                    meta={'path': p},
+                )
             code_link = item.css('div.product-buttons-line.toggle > div:nth-child(2) > a:nth-child(4) ::attr(href)').extract_first()
-            yield scrapy.Request(
-                url=self.base_url + pdf_link,
-                callback=self.save_file,
-                meta={'path': path.joinpath('codes' + '.zip')},
-            )
+            p = path.joinpath(slug + 'codes.zip')
+            if code_link and not p.exists():
+                yield scrapy.Request(
+                    url=self.base_url + code_link,
+                    callback=self.save_file,
+                    meta={'path': p},
+                )
 
             isbn = item.css('div.product-buttons-line.toggle > div:nth-child(1) > a:nth-child(1) > div ::attr(isbn)').extract_first()
             path.joinpath('isbn.txt').write_text(isbn)
