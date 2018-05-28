@@ -33,14 +33,16 @@ class PacktpubSpider(scrapy.Spider):
 
     def parse_list(self, response):
         for item in response.css('#product-account-list > div'):
-            title = item.css('div.product-top-line > div.float-left.content-width > div.title ::text').extract_first().strip()
+            title = (item.css('div.product-top-line > div.float-left.content-width > div.title ::text').extract_first() or '').strip()
+            if not title:
+                continue
             title = title.replace(' [eBook]', '')
-            slug = title.replace(' ', '_').lower()
+            slug = title.replace(' ', '_').lower().encode(encoding='ascii', errors='ignore').decode(encoding='ascii')
             path = pathlib.Path(self.storage_dir + os.path.sep + slug)
             authors = item.css('div.product-top-line > div.float-left.content-width > div.author ::text').extract_first().strip()
             path.mkdir(parents=True, exist_ok=True)
-            path.joinpath('authors.txt').write_text(authors)
-            path.joinpath('title.txt').write_text(title)
+            path.joinpath('authors.txt').write_text(authors, encoding='utf-8')
+            path.joinpath('title.txt').write_text(title, encoding='utf-8')
 
             pdf_link = item.css('div.product-buttons-line.toggle > div:nth-child(2) > a:nth-child(1) ::attr(href)').extract_first()
             p = path.joinpath(slug + '.pdf')
