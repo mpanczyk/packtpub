@@ -69,7 +69,7 @@ class PacktpubSpider(scrapy.Spider):
                     meta={'path': p},
                 )
             code_link = item.css('div.product-buttons-line.toggle > div:nth-child(2) > a:nth-child(4) ::attr(href)').extract_first()
-            p = path.joinpath(slug + 'codes.zip')
+            p = path.joinpath('codes.zip')
             if code_link and not p.exists():
                 yield scrapy.Request(
                     url=self.base_url + code_link,
